@@ -1,0 +1,22 @@
+h1.typography {
+  margin: 0;
+}
+
+p.typography {
+  margin: 0;
+  font-size: 18px;
+}
+
+.typography {
+  color: var(--gray-40);
+}
+
+.typography--center {
+  text-align: center;
+}
+
+@media (prefers-color-scheme: dark) {
+  .typography {
+    color: var(--gray-80);
+  }
+}

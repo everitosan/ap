@@ -1,0 +1,42 @@
+/* Typographys */
+@import url('https://fonts.googleapis.com/css2?family=Bree+Serif&display=swap');
+
+:root {
+  color-scheme: dark light;
+  --gray-100: #F1F1F1;
+  --gray-80: #D9D9D9;
+  --gray-60: #717171;
+  --gray-40: #4C4C4C;
+  --black-100: #000000;
+  --black-80: #1B1B1B;
+}
+
+/* Dark theme */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background-color:  var(--black-80);
+    --primary: var(--gray-100);
+  }
+}
+
+/* Light theme */
+@media (prefers-color-scheme: light) {
+  :root {
+    --background-color: var(--gray-100);
+    --primary: var(--black-80);
+  }
+}
+
+
+html, body {
+  background: var(--background-color);
+  color: var(--primary);
+  display: grid;
+  font-family: "Bree Serif", serif;
+  font-weight: 400;
+  font-style: normal;
+  grid-template-rows: 60px 1fr;
+  height: 100vh;
+  margin: 0;
+  padding: 0;
+}
