@@ -2,7 +2,7 @@ import "../styles/components/input.css"
 
 const Input: React.FunctionComponent<{
   placeholder?: string
-  type?: "text" | "phone" | "number" 
+  type?: "text" | "tel" | "number" 
 }> = ({ placeholder = "", type = "text" }) => {
   return (
     <input 

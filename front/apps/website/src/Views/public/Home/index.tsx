@@ -23,7 +23,7 @@ const Home: React.FunctionComponent = () => {
       </div>
 
       <div className="HomeView__form" >
-        <Input type="phone" placeholder="Teléfono de Whatsapp" />
+        <Input type="tel" placeholder="Teléfono de Whatsapp" />
         <Button> ¡Empezar! </Button>
         <Button variant="text"> Ya tengo una cuenta </Button>
       </div>
