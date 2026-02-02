@@ -1,9 +1,13 @@
+.input-wrapper {
+  width: 100%;
+}
+
 .input {
   background: var(--gray-80);
-  border: none;
+  border: 2px solid transparent;
   border-radius: 3px;
   box-sizing: border-box;
-  color: var(--black-80); 
+  color: var(--black-80);
   font-family: "Bree Serif", serif;
   font-size: 24px;
   padding: 16px 18px;
@@ -12,4 +16,15 @@
 
 .input:active, .input:focus {
   outline: none;
+}
+
+.input--error {
+  border-color: var(--red-50);
+}
+
+.input-error {
+  color: var(--red-50);
+  font-size: 14px;
+  margin-top: 4px;
+  display: block;
 }

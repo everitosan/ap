@@ -17,6 +17,15 @@
   text-decoration: underline;
 }
 
+.button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.button--loading {
+  cursor: wait;
+}
+
 @media (prefers-color-scheme: dark) {
   .button--box  {
     background: var(--gray-80);

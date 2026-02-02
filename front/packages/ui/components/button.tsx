@@ -5,13 +5,17 @@ const Button: React.FunctionComponent<{
   variant?: "box" | "text"
   type?: "button" | "submit"
   onClick?: () => void
-}> = ({ children, type="button", variant="box",  onClick }) => {
+  loading?: boolean
+  disabled?: boolean
+}> = ({ children, type = "button", variant = "box", onClick, loading, disabled }) => {
   return (
-    <button 
+    <button
       onClick={onClick}
-      className={`button button--${variant}`} 
-      type={type} >
-      {children}
+      className={`button button--${variant} ${loading ? "button--loading" : ""}`}
+      type={type}
+      disabled={disabled || loading}
+    >
+      {loading ? "Cargando..." : children}
     </button>
   )
 }
