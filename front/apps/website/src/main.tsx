@@ -1,17 +1,28 @@
-import { StrictMode } from 'react'
-import { createRoot } from 'react-dom/client'
+import { StrictMode } from "react";
+import { createRoot } from "react-dom/client";
 
-import Home from "./Views/public/Home/index"
-import Navbar from "@repo/ui/components/navbar"
-import Content from "@repo/ui/components/content"
+import Navbar from "@repo/ui/components/navbar";
+import Content from "@repo/ui/components/content";
+// views
+import Home from "./Views/public/Home/index";
+import Login from "./Views/public/Login/index";
+import Validate from "./Views/public/Validate";
 
-import "@repo/ui/styles/themes.css"
+import { BrowserRouter, Routes, Route } from "react-router";
 
-createRoot(document.getElementById('root')!).render(
+import "@repo/ui/styles/themes.css";
+
+createRoot(document.getElementById("root")!).render(
   <StrictMode>
-    <Navbar/>
+    <Navbar />
     <Content>
-      <Home />
+      <BrowserRouter>
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/validate" element={<Validate />} />
+        </Routes>
+      </BrowserRouter>
     </Content>
   </StrictMode>,
-)
+);

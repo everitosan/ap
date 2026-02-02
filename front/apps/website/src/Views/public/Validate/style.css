@@ -1,28 +1,33 @@
-.LoginView {
+.ValidteView {
   display: grid;
   grid-row-gap: var(--spacing-6x);
 }
 
-.LoginView__head {
+.ValidteView__head {
   display: grid;
   grid-row-gap: var(--spacing-6x);
+  .ValidteView__estampa {
+    margin: 0 auto;
+    width: 250px;
+  }
 }
 
-.LoginView__estampa {
-  margin: 0 auto;
-  width: 40%;
-  max-width: 236px;
-}
-
-.LoginView__login {
-  margin-top: var(--spacing-6x);
+.ValidteView__validate {
   display: grid;
   grid-row-gap: var(--spacing-6x);
   place-items: center;
+
+}
+
+.ValidteView__validate__input {
+  display: flex;
+  grid-column-gap: var(--spacing-4x);
+  max-width: 400px;
+  margin: 0 auto;
 }
 
 @media screen and (min-width: 768px) {
-  .LoginView {
+  .ValidteView {
     grid-template-columns: 0.7fr 1fr;
     grid-column-gap: var(--spacing-8x);
   }

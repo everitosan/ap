@@ -1,3 +1,12 @@
 .content {
+  max-width: 1000px;
+  margin: 0 auto;
   padding: 24px;
+}
+@media screen and (min-width: 768px) { 
+  .content {
+    display: grid;
+    height: 80vh;
+    place-items: center;
+  }
 }

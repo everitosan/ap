@@ -1,6 +1,7 @@
 .HomeView__intro {
   display: grid;
   grid-row-gap: 24px;
+  margin-bottom: var(--spacing-6x);
 
   .estampa1 {
     display: block;
@@ -9,9 +10,29 @@
   }
 }
 
-.HomeView__form {
-  margin-top: 48px;
+.HomeView__register {
+  margin-top: var(--spacing-6x);
+  grid-row-gap: var(--spacing-6x);
   display: grid;
-  grid-row-gap: 24px;
+}
+
+.HomeView__register__form {
+  display: grid;
+  grid-row-gap: var(--spacing-6x);
+  margin-top: var(--spacing-6x);
   place-items: center;
+}
+
+@media screen and (min-width: 768px) {
+  .HomeView {
+    display: grid;
+    grid-template-columns: 0.7fr 1px 1fr;
+    grid-column-gap: var(--spacing-8x);
+  }
+
+  .HomeView__intro {
+    .estampa1 {
+      width: 320px;
+    }
+  }
 }

@@ -1,13 +1,21 @@
 // Components
 import Typo from "@repo/ui/components/typography"
 import Divider from "@repo/ui/components/divider"
-import Estampa1 from "../../../assets/estampa-1.png"
 import Input from "@repo/ui/components/input"
 import Button from "@repo/ui/components/button"
+import { Link, useNavigate } from "react-router"
 
+import Estampa1 from "../../../assets/estampa-1.png"
 import "./style.css"
 
 const Home: React.FunctionComponent = () => {
+
+  const navigate = useNavigate();
+
+  const onSubmit = () => {
+    navigate("/validate")
+  }
+
   return (
     <section className="HomeView" >
 
@@ -17,15 +25,19 @@ const Home: React.FunctionComponent = () => {
         </Typo>
         <Typo align="center" > ¿Quieres crear relaciones significativas a través del papel? </Typo>
         <img className="estampa1" src={Estampa1} alt="img-1" />
-        <Divider />
-        <Typo> Amigo postal es un sitio dónde puedes encontrar a tu póximo confidente por correo. </Typo>
-        <Typo> Solo crea una cuenta y aleatoriamente se te asignará una persona para que puedan empezar a mandarse cartas. </Typo>
       </div>
+        <Divider />
 
-      <div className="HomeView__form" >
-        <Input type="tel" placeholder="Teléfono de Whatsapp" />
-        <Button> ¡Empezar! </Button>
-        <Button variant="text"> Ya tengo una cuenta </Button>
+      <div className="HomeView__register" >
+        <Typo> Solo crea una cuenta y aleatoriamente se te asignará una persona para que puedan empezar a mandarse cartas. </Typo>
+        <Typo> Amigo postal es un sitio dónde puedes encontrar a tu póximo confidente por correo. </Typo>
+        <form className="HomeView__register__form" >
+          <Input name="telephone" type="tel" placeholder="Teléfono de Whatsapp" />
+          <Button onClick={onSubmit} > ¡Empezar! </Button>
+          <Link to="/login">
+            <Button variant="text"> Ya tengo una cuenta </Button>
+          </Link>
+        </form>
       </div>
 
     </section>
