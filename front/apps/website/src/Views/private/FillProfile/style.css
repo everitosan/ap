@@ -1,0 +1,14 @@
+.FillProfileView {
+  display: grid;
+  grid-row-gap: var(--spacing-6x);
+}
+
+.FillProfileView__form {
+  display: grid;
+  grid-row-gap: var(--spacing-6x);
+  
+}
+
+.FillProfileView__form__buttons{
+  justify-self: center;
+}
