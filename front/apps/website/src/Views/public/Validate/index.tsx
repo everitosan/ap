@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react"
+import { useState, useEffect, useRef } from "react"
 import Typo from "@repo/ui/components/typography"
 import Divider from "@repo/ui/components/divider"
 import Estampa2 from "../../../assets/estampa-2.png"
@@ -38,13 +38,35 @@ const RetryButton: React.FunctionComponent<{
 }
 
 const ValidateView:React.FunctionComponent = () => {
+  const [code, setCode] = useState<string[]>(["", "", "", "", ""])
+  const inputRefs = useRef<(HTMLInputElement | null)[]>([])
 
   const resendCode = () => {
     console.log("resending")
   }
 
   const tryCode = () => {
-    console.log("trying code")
+    console.log("trying code", code.join(""))
+  }
+
+  const handleChange = (index: number, value: string) => {
+    if (value.length > 1) {
+      value = value.slice(-1)
+    }
+
+    const newCode = [...code]
+    newCode[index] = value
+    setCode(newCode)
+
+    if (value && index < 4) {
+      inputRefs.current[index + 1]?.focus()
+    }
+  }
+
+  const handleKeyDown = (index: number, e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Backspace" && !code[index] && index > 0) {
+      inputRefs.current[index - 1]?.focus()
+    }
   }
 
   return (
@@ -57,11 +79,18 @@ const ValidateView:React.FunctionComponent = () => {
       <div className="ValidteView__validate">
         <Typo> Ingresa el código que recibiste a tu teléfono para iniciar sesión. </Typo>
         <div className="ValidteView__validate__input">
-          <Input name="c1" type="number" />
-          <Input name="c2" type="number" />
-          <Input name="c3" type="number" />
-          <Input name="c4" type="number" />
-          <Input name="c5" type="number" />
+          {[0, 1, 2, 3, 4].map((index) => (
+            <Input
+              key={index}
+              name={`c${index + 1}`}
+              type="text"
+              maxLength={1}
+              value={code[index]}
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleChange(index, e.target.value)}
+              onKeyDown={(e: React.KeyboardEvent<HTMLInputElement>) => handleKeyDown(index, e)}
+              ref={(el: HTMLInputElement | null) => { inputRefs.current[index] = el }}
+            />
+          ))}
         </div>
 
         <Button onClick={tryCode}> Ingresar </Button>
