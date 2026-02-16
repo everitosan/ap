@@ -1,0 +1,40 @@
+services:
+  postgres:
+    image: postgres:15
+    container_name: ap_db
+    env_file:
+      - .env
+    ports:
+      - "9000:5432"
+    volumes:
+      - ./schema.sql:/docker-entrypoint-initdb.d/schema.sql:ro
+    networks:
+      - ap_network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-evesan}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    container_name: ap_pg-admin
+    env_file:
+      - .env
+    ports:
+      - "9001:80"
+    volumes:
+      - pgadmin_data:/var/lib/pgadmin
+      - ./servers.json:/pgadmin4/servers.json:ro
+    networks:
+      - ap_network
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+networks:
+  ap_network:
+    driver: bridge
+
+volumes:
+  pgadmin_data:
