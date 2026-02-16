@@ -5,5 +5,5 @@ mod postgres_repository;
 
 pub use handlers::{register_or_login, validate_code};
 pub use otp_generator::{OtpGenerator, RandomOtpGenerator};
-pub use phone_notifier::{PhoneNotifier, StubPhoneNotifier};
+pub use phone_notifier::{PhoneNotifier, StubPhoneNotifier, WhatsAppPhoneNotifier};
 pub use postgres_repository::{PostgresUserRepository, PostgresValidationCodeRepository};

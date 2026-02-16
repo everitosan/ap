@@ -34,9 +34,9 @@ CREATE TABLE users (
     phone VARCHAR(13) NOT NULL,
     address JSONB,
     username VARCHAR(40) NULL,
-    created TIMESTAMP NOT NULL DEFAULT NOW(),
+    created TIMESTAMPTZ NOT NULL DEFAULT NOW(),
     topics JSONB NULL,
-    last_login TIMESTAMP NULL
+    last_login TIMESTAMPTZ NULL
 );
 
 CREATE INDEX idx_users_phone ON users(phone);
@@ -46,7 +46,7 @@ DROP TABLE IF EXISTS validation_codes CASCADE;
 CREATE TABLE validation_codes (
     user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
     code VARCHAR(5) NOT NULL,
-    expires_at TIMESTAMP NOT NULL
+    expires_at TIMESTAMPTZ NOT NULL
 );
 
 CREATE INDEX idx_validation_codes_code ON validation_codes(code);

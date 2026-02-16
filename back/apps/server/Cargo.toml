@@ -49,6 +49,9 @@ rand = "0.10.0"
 futures = "0.3"
 async-trait = "0.1"
 
+# Libs internas
+whatsapp = { path = "../../libs/whatsapp" }
+
 [dev-dependencies]
 actix-rt = "2"
 tokio-test = "0.4"

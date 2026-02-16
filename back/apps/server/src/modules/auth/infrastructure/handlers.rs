@@ -5,7 +5,7 @@ use uuid::Uuid;
 
 use crate::modules::auth::application::{request_otp, verify_otp};
 use crate::modules::auth::infrastructure::{
-    PostgresUserRepository, PostgresValidationCodeRepository, RandomOtpGenerator, StubPhoneNotifier,
+    PostgresUserRepository, PostgresValidationCodeRepository, RandomOtpGenerator,
 };
 use crate::shared::{ApiResponse, AppState};
 
@@ -30,14 +30,13 @@ pub async fn register_or_login(
     let user_repo = PostgresUserRepository::new(state.db_pool.clone());
     let code_repo = PostgresValidationCodeRepository::new(state.db_pool.clone());
     let otp_generator = RandomOtpGenerator;
-    let notifier = StubPhoneNotifier;
 
     match request_otp(
         &body.telephone,
         &user_repo,
         &code_repo,
         &otp_generator,
-        &notifier,
+        state.phone_notifier.as_ref(),
     )
     .await
     {

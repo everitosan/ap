@@ -1,8 +1,11 @@
+use std::sync::Arc;
+
 use actix_web::{middleware, web, App, HttpServer};
 use tracing::info;
 use tracing_actix_web::TracingLogger;
 
 use ap_back::config::{create_pool, Settings};
+use ap_back::modules::auth::infrastructure::WhatsAppPhoneNotifier;
 use ap_back::server::{configure_routes, shutdown_signal};
 use ap_back::shared::AppState;
 
@@ -26,8 +29,14 @@ async fn main() -> std::io::Result<()> {
 
     info!("Database pool created successfully");
 
+    // Create WhatsApp phone notifier
+    let phone_notifier = Arc::new(WhatsAppPhoneNotifier::new(
+        settings.whatsapp.clone(),
+        &settings.whatsapp_otp_template,
+    ));
+
     // Create application state
-    let app_state = web::Data::new(AppState::new(db_pool.clone()));
+    let app_state = web::Data::new(AppState::new(db_pool.clone(), phone_notifier));
 
     let bind_address = format!("{}:{}", settings.server.host, settings.server.port);
     info!("Binding to {}", bind_address);

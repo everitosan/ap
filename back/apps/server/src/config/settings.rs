@@ -1,9 +1,12 @@
 use std::env;
+use whatsapp::Config as WhatsAppConfig;
 
 #[derive(Debug, Clone)]
 pub struct Settings {
     pub database: DatabaseSettings,
     pub server: ServerSettings,
+    pub whatsapp: WhatsAppConfig,
+    pub whatsapp_otp_template: String,
 }
 
 #[derive(Debug, Clone)]
@@ -44,6 +47,15 @@ impl Settings {
                     .parse()
                     .unwrap_or(8080),
             },
+            whatsapp: WhatsAppConfig::new(
+                env::var("WHATSAPP_WEBHOOK_TOKEN")?,
+                env::var("WHATSAPP_PHONE_NUMBER_ID")?,
+                env::var("WHATSAPP_GRAPH_API_TOKEN")?,
+                env::var("WHATSAPP_GRAPH_API_VERSION").unwrap_or_else(|_| "v21.0".into()),
+                env::var("WHATSAPP_GRAPH_API_URL")
+                    .unwrap_or_else(|_| "https://graph.facebook.com".into()),
+            ),
+            whatsapp_otp_template: env::var("WHATSAPP_OTP_TEMPLATE")?,
         })
     }
 }
