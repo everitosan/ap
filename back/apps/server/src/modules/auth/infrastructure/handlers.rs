@@ -1,7 +1,8 @@
 use actix_web::cookie::time::Duration;
 use actix_web::cookie::{Cookie, SameSite};
 use actix_web::{web, HttpRequest, HttpResponse, ResponseError};
-use serde::Deserialize;
+use chrono::{DateTime, Utc};
+use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 
 use crate::modules::auth::application::{request_otp, verify_otp};
@@ -9,7 +10,7 @@ use crate::modules::auth::domain::{SessionData, UserRepository};
 use crate::modules::auth::infrastructure::{
     PostgresUserRepository, PostgresValidationCodeRepository, RandomOtpGenerator,
 };
-use crate::shared::{ApiResponse, AppState, AppError};
+use crate::shared::{ApiResponse, AppState, AppError, AuthSession};
 
 const TMP_COOKIE_NAME: &str = "ap_tmp";
 const SESSION_COOKIE_NAME: &str = "ap";
@@ -118,4 +119,34 @@ pub async fn validate_code(
         .cookie(session_cookie)
         .cookie(remove_tmp_cookie)
         .json(ApiResponse::new("Verified"))
+}
+
+#[derive(Serialize)]
+pub struct UserResponse {
+    pub username: Option<String>,
+    pub topics: Option<serde_json::Value>,
+    pub created: DateTime<Utc>,
+    pub filled_address: bool,
+}
+
+/// GET /api/v1/user
+pub async fn get_user(
+    session: AuthSession,
+    state: web::Data<AppState>,
+) -> HttpResponse {
+    let user_repo = PostgresUserRepository::new(state.db_pool.clone());
+
+    match user_repo.find_by_id(session.user_id).await {
+        Ok(Some(user)) => {
+            let response = UserResponse {
+                username: user.username,
+                topics: user.topics,
+                created: user.created,
+                filled_address: user.address.is_some(),
+            };
+            HttpResponse::Ok().json(ApiResponse::new(response))
+        }
+        Ok(None) => AppError::NotFound("User not found".into()).error_response(),
+        Err(e) => e.error_response(),
+    }
 }
