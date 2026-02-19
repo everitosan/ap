@@ -1,43 +1,56 @@
 import { useState } from "react"
+import { useNavigate } from "react-router"
+import { FetchError } from "justfetch-ts"
 
+// Components
 import Typo from "@repo/ui/components/typography"
 import Divider from "@repo/ui/components/divider"
 import Input from "@repo/ui/components/input"
 import Button from "@repo/ui/components/button"
+import TagSelector from "@repo/ui/components/tag-selector"
+
 import { validate } from "@/validations"
+import { useCatalogues } from "@/modules/catalogues/app/CataloguesProvider"
+import { useUser } from "@/modules/user/app/UserProvider"
+import { fillProfile } from "@/modules/user/infra/repository/profile"
+import type { ApiError } from "@/api/ap"
 
 import "./style.css"
 
-import TagSelector, {type Tag} from "@repo/ui/components/tag-selector"
-
-const tags: Tag[] = [
-  {
-    id: "1",
-    display: "Arte"
-  },
-  {
-    id: "2",
-    display: "Cultura"
-  }
-] 
 
 const FillProfileView : React.FunctionComponent = () => {
+  const navigate = useNavigate()
+  const { topics } = useCatalogues()
+  const { updateUser } = useUser()
+  const tags = topics.map(t => ({ id: t.id, display: t.name }))
 
   const [loading, setLoading] = useState<boolean>(false)
   const [usernameErr, setUserNameErr] = useState<string|undefined>(undefined)
-  
+
   const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
+    e.preventDefault()
     setUserNameErr("")
     const username = (e.currentTarget.elements.namedItem("username") as HTMLInputElement).value
-    const topics = (e.currentTarget.elements.namedItem("topics") as HTMLInputElement).value
-    
+    const selectedTopics = (e.currentTarget.elements.namedItem("topics") as HTMLInputElement).value
+
     try {
-      const usernameValidated = await validate("username", username)
+      await validate("username", username)
       setLoading(true)
-      console.log(usernameValidated, topics)
-    } catch (e) {
-      setUserNameErr(e as string)
+
+      const topicsArray = selectedTopics ? selectedTopics.split(",") : []
+      await fillProfile(username, topicsArray)
+      updateUser({ username, topics: topicsArray })
+      navigate("/")
+    } catch (err) {
+      if (err instanceof FetchError) {
+        const apiError = err.message as unknown as ApiError
+        alert(apiError.message || "Error al guardar perfil")
+      } else if (typeof err === "string") {
+        setUserNameErr(err)
+      } else {
+        alert("Error inesperado")
+      }
+    } finally {
       setLoading(false)
     }
   }

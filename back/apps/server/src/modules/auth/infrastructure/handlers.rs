@@ -188,3 +188,23 @@ pub async fn resend_code(
         Err(e) => e.error_response(),
     }
 }
+
+#[derive(Deserialize)]
+pub struct FillProfileRequest {
+    username: String,
+    topics: serde_json::Value,
+}
+
+/// POST /api/v1/fill-profile
+pub async fn fill_profile(
+    session: AuthSession,
+    state: web::Data<AppState>,
+    body: web::Json<FillProfileRequest>,
+) -> HttpResponse {
+    let user_repo = PostgresUserRepository::new(state.db_pool.clone());
+
+    match user_repo.update_profile(session.user_id, &body.username, &body.topics).await {
+        Ok(()) => HttpResponse::Ok().json(ApiResponse::new("Profile updated")),
+        Err(e) => e.error_response(),
+    }
+}

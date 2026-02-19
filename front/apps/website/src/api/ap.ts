@@ -1,4 +1,5 @@
 import { Fetch } from "justfetch-ts"
+import type { Topic } from "@/modules/catalogues/domain/topic"
 
 export type ApiResponse<T> = {
   data: T
@@ -7,6 +8,13 @@ export type ApiResponse<T> = {
 export type ApiError = {
   error: string
   message: string
+}
+
+export type UserResponse = {
+  username: string | null
+  topics: unknown | null
+  created: string
+  filled_address: boolean
 }
 
 class ApApi extends Fetch {
@@ -20,6 +28,22 @@ class ApApi extends Fetch {
 
   validateCode(code: string): Promise<ApiResponse<string>> {
     return this.post("/api/v1/phone-validate", { payload: { code } })
+  }
+
+  resendCode(): Promise<ApiResponse<string>> {
+    return this.post("/api/v1/resend-code", {})
+  }
+
+  getUser(): Promise<ApiResponse<UserResponse>> {
+    return this.get("/api/v1/user")
+  }
+
+  getTopics(): Promise<ApiResponse<Topic[]>> {
+    return this.get("/api/v1/topics")
+  }
+
+  fillProfile(username: string, topics: string[]): Promise<ApiResponse<string>> {
+    return this.post("/api/v1/fill-profile", { payload: { username, topics } })
   }
 }
 

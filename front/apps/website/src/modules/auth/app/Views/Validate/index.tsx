@@ -1,6 +1,5 @@
 import { useState, useEffect, useRef } from "react"
-import { useNavigate } from "react-router"
-import { validateCode } from "@/modules/auth/infra/repository/login-register"
+import { validateCode, resendCode as resendCodeApi } from "@/modules/auth/infra/repository/login-register"
 import { FetchError } from "justfetch-ts"
 import type { ApiError } from "@/api/ap"
 
@@ -45,14 +44,21 @@ const RetryButton: React.FunctionComponent<{
 }
 
 const ValidateView:React.FunctionComponent = () => {
-  const navigate = useNavigate()
   const [code, setCode] = useState<string[]>(["", "", "", "", ""])
   const [loading, setLoading] = useState<boolean>(false)
   const inputRefs = useRef<(HTMLInputElement | null)[]>([])
 
-  const resendCode = () => {
-    // TODO: implement resend - needs backend endpoint or stored telephone
-    console.log("resending")
+  const resendCode = async () => {
+    try {
+      await resendCodeApi()
+    } catch (err) {
+      if (err instanceof FetchError) {
+        const apiError = err.message as unknown as ApiError
+        alert(apiError.message || "Error al reenviar código")
+      } else {
+        alert("Error inesperado")
+      }
+    }
   }
 
   const tryCode = async () => {
@@ -62,7 +68,7 @@ const ValidateView:React.FunctionComponent = () => {
     setLoading(true)
     try {
       await validateCode(fullCode)
-      navigate("/fill-profile")
+      window.location.href = "/"
     } catch (err) {
       if (err instanceof FetchError) {
         const apiError = err.message as unknown as ApiError

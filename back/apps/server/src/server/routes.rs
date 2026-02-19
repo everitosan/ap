@@ -1,6 +1,6 @@
 use actix_web::{web, HttpResponse};
 
-use crate::modules::auth::infrastructure::{get_user, register_or_login, resend_code, validate_code};
+use crate::modules::auth::infrastructure::{fill_profile, get_user, register_or_login, resend_code, validate_code};
 use crate::modules::topics::infrastructure::get_topics;
 use crate::shared::ApiResponse;
 
@@ -19,6 +19,7 @@ pub fn configure_routes(cfg: &mut web::ServiceConfig) {
             .route("/login", web::post().to(register_or_login))
             .route("/phone-validate", web::post().to(validate_code))
             .route("/resend-code", web::post().to(resend_code))
-            .route("/user", web::get().to(get_user)),
+            .route("/user", web::get().to(get_user))
+            .route("/fill-profile", web::post().to(fill_profile)),
     );
 }

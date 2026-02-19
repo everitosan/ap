@@ -1,0 +1,13 @@
+.MyFriendView {
+  display: grid;
+  grid-row-gap: var(--spacing-6x);
+}
+
+.MyFriendView__empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-evenly;
+  gap: var(--spacing-8x);
+  height: 50vh;
+}

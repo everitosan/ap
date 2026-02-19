@@ -1,5 +1,6 @@
 .tag-selector {
   display: flex;
+  flex-wrap: wrap;
   grid-column-gap: var(--spacing-2x);
   grid-row-gap: var(--spacing-2x);
 

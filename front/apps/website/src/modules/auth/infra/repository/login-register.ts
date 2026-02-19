@@ -7,3 +7,7 @@ export const loginOrRegister = (telephone: string) => {
 export const validateCode = (code: string) => {
   return api.validateCode(code)
 }
+
+export const resendCode = () => {
+  return api.resendCode()
+}
