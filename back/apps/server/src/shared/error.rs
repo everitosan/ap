@@ -14,6 +14,8 @@ pub enum AppError {
     Conflict(String),
     /// Database connection, query, or transaction errors
     Database(String),
+    /// Authentication required or invalid credentials
+    Unauthorized(String),
 }
 
 impl fmt::Display for AppError {
@@ -24,6 +26,7 @@ impl fmt::Display for AppError {
             AppError::BadRequest(msg) => write!(f, "Bad request: {}", msg),
             AppError::Conflict(msg) => write!(f, "Conflict: {}", msg),
             AppError::Database(msg) => write!(f, "Database error: {}", msg),
+            AppError::Unauthorized(msg) => write!(f, "Unauthorized: {}", msg),
         }
     }
 }
@@ -60,6 +63,12 @@ impl ResponseError for AppError {
                 HttpResponse::InternalServerError().json(serde_json::json!({
                     "error": "database_error",
                     "message": "An internal error occurred"
+                }))
+            }
+            AppError::Unauthorized(msg) => {
+                HttpResponse::Unauthorized().json(serde_json::json!({
+                    "error": "unauthorized",
+                    "message": msg
                 }))
             }
         }
