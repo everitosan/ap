@@ -3,6 +3,7 @@ import { BrowserRouter, Routes, Route, Navigate, useLocation } from "react-route
 // Private views
 import MyFriend from "@/modules/user/app/Views/MyFriend";
 import FillProfile from "@/modules/user/app/Views/FillProfile";
+import FillAddress from "@/modules/user/app/Views/FillAddress";
 import CataloguesProvider from "@/modules/catalogues/app/CataloguesProvider";
 import { useUser } from "@/modules/user/app/UserProvider";
 
@@ -25,6 +26,7 @@ const UserRoutes: React.FunctionComponent = () => {
           <Routes>
             <Route path="/" element={<MyFriend />} />
             <Route path="/fill-profile" element={<FillProfile />} />
+            <Route path="/fill-address" element={<FillAddress />} />
           </Routes>
         </RequireProfile>
       </BrowserRouter>

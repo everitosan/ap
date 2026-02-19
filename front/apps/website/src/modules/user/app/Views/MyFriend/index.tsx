@@ -1,15 +1,11 @@
 import Typo from "@repo/ui/components/typography"
 import Divider from "@repo/ui/components/divider"
-import Button from "@repo/ui/components/button"
+import Empty from "./Empty"
 
 import "./style.css"
 
 const MyFriendView: React.FunctionComponent = () => {
   const hasFriend = false
-
-  const handleRequest = () => {
-    // TODO: Implementar solicitud de amigo
-  }
 
   return (
     <section className="MyFriendView">
@@ -17,12 +13,7 @@ const MyFriendView: React.FunctionComponent = () => {
       <Divider />
 
       {!hasFriend && (
-        <div className="MyFriendView__empty">
-          <Typo align="center">
-            Al parecer aún no tienes un amigo adignado, no te preocupes puedes solicitar uno haciendo click abajo.
-          </Typo>
-          <Button onClick={handleRequest}>Solicitar</Button>
-        </div>
+        <Empty />
       )}
     </section>
   )

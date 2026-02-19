@@ -208,3 +208,36 @@ pub async fn fill_profile(
         Err(e) => e.error_response(),
     }
 }
+
+#[derive(Deserialize)]
+pub struct FillAddressRequest {
+    street: String,
+    int_number: String,
+    postal_code: String,
+    state: String,
+    city: String,
+    colony: String,
+}
+
+/// POST /api/v1/fill-address
+pub async fn fill_address(
+    session: AuthSession,
+    state: web::Data<AppState>,
+    body: web::Json<FillAddressRequest>,
+) -> HttpResponse {
+    let user_repo = PostgresUserRepository::new(state.db_pool.clone());
+
+    let address = serde_json::json!({
+        "street": body.street,
+        "int_number": body.int_number,
+        "postal_code": body.postal_code,
+        "state": body.state,
+        "city": body.city,
+        "colony": body.colony,
+    });
+
+    match user_repo.update_address(session.user_id, &address).await {
+        Ok(()) => HttpResponse::Ok().json(ApiResponse::new("Address updated")),
+        Err(e) => e.error_response(),
+    }
+}

@@ -1,0 +1,20 @@
+.FillAddressView {
+  display: grid;
+  grid-row-gap: var(--spacing-6x);
+}
+
+.FillAddressView__form {
+  display: grid;
+  grid-row-gap: var(--spacing-6x);
+}
+
+.FillAddressView__form__row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--spacing-4x);
+}
+
+.FillAddressView__form__buttons {
+  margin-top: var(--spacing-6x);
+  justify-self: center;
+}

@@ -121,6 +121,16 @@ impl UserRepository for PostgresUserRepository {
 
         Ok(())
     }
+
+    async fn update_address(&self, id: Uuid, address: &serde_json::Value) -> Result<(), AppError> {
+        sqlx::query("UPDATE users SET address = $2 WHERE id = $1")
+            .bind(id)
+            .bind(address)
+            .execute(&self.pool)
+            .await?;
+
+        Ok(())
+    }
 }
 
 pub struct PostgresValidationCodeRepository {

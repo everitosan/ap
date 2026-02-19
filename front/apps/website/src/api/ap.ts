@@ -17,6 +17,15 @@ export type UserResponse = {
   filled_address: boolean
 }
 
+export type AddressData = {
+  street: string
+  int_number: string
+  postal_code: string
+  state: string
+  city: string
+  colony: string
+}
+
 class ApApi extends Fetch {
   login(telephone: string): Promise<ApiResponse<string>> {
     return this.post("/api/v1/login", { payload: { telephone } })
@@ -44,6 +53,10 @@ class ApApi extends Fetch {
 
   fillProfile(username: string, topics: string[]): Promise<ApiResponse<string>> {
     return this.post("/api/v1/fill-profile", { payload: { username, topics } })
+  }
+
+  fillAddress(address: AddressData): Promise<ApiResponse<string>> {
+    return this.post("/api/v1/fill-address", { payload: address })
   }
 }
 
