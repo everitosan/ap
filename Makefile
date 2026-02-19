@@ -13,8 +13,7 @@ dev/db:
 	@docker exec -it ap_db psql ap_db -U evesan
 
 build:
-	@cd front && npm run build
+	@./utils/scripts/build.sh
 
 deploy:
-	@cd front/apps/website/dist && 7z a ap.7z ./
-	@scp front/apps/website/dist/ap.7z eve-dev:/home/ubuntu/apps
+	@./utils/scripts/deploy.sh
