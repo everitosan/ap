@@ -7,6 +7,7 @@ edition = "2021"
 # Framework HTTP
 actix-web = "4"
 actix-rt = "2"
+actix-cors = "0.7"
 
 # Async runtime
 tokio = { version = "1", features = ["full", "signal"] }
@@ -48,6 +49,10 @@ tracing-actix-web = "0.7"
 rand = "0.10.0"
 futures = "0.3"
 async-trait = "0.1"
+
+# Encriptación
+aes-gcm = "0.10"
+base64 = "0.22"
 
 # Libs internas
 whatsapp = { path = "../../libs/whatsapp" }

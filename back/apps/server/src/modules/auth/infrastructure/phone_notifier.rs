@@ -35,7 +35,7 @@ impl WhatsAppPhoneNotifier {
         Self {
             client: WhatsAppClient::new(config),
             template_name: template_name.into(),
-            language: Language::default(),
+            language: Language::En,
         }
     }
 

@@ -25,6 +25,8 @@ impl Client {
     pub async fn post(&self, path: &str, body: &Value) -> Result<Value, WhatsappError> {
         let url = format!("{}/{}", self.config.base_url(), path);
 
+        println!("{}", url);
+
         let response = self
             .http
             .post(&url)

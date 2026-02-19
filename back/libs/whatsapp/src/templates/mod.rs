@@ -13,8 +13,10 @@ use self::parameters::Parameters;
 pub enum Language {
     #[default]
     EsMx,
+    Es,
     EsEs,
     EnUs,
+    En,
     EnGb,
     PtBr,
 }
@@ -23,8 +25,10 @@ impl Language {
     pub fn code(&self) -> &'static str {
         match self {
             Language::EsMx => "es_MX",
+            Language::Es => "es",
             Language::EsEs => "es_ES",
             Language::EnUs => "en_US",
+            Language::En => "en",
             Language::EnGb => "en_GB",
             Language::PtBr => "pt_BR",
         }
@@ -51,6 +55,8 @@ pub async fn send(
             "components": components,
         }
     });
+
+    println!("{}",&body);
 
     client.post("messages", &body).await
 }

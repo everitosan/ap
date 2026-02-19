@@ -19,6 +19,8 @@ pub struct DatabaseSettings {
 pub struct ServerSettings {
     pub host: String,
     pub port: u16,
+    pub frontend_url: String,
+    pub cookie_secret: String,
 }
 
 impl Settings {
@@ -46,12 +48,15 @@ impl Settings {
                     .unwrap_or_else(|_| "8080".into())
                     .parse()
                     .unwrap_or(8080),
+                frontend_url: env::var("FRONTEND_URL")
+                    .unwrap_or_else(|_| "http://localhost:5173".into()),
+                cookie_secret: env::var("COOKIE_SECRET")?,
             },
             whatsapp: WhatsAppConfig::new(
                 env::var("WHATSAPP_WEBHOOK_TOKEN")?,
                 env::var("WHATSAPP_PHONE_NUMBER_ID")?,
                 env::var("WHATSAPP_GRAPH_API_TOKEN")?,
-                env::var("WHATSAPP_GRAPH_API_VERSION").unwrap_or_else(|_| "v21.0".into()),
+                env::var("WHATSAPP_GRAPH_API_VERSION").unwrap_or_else(|_| "v24.0".into()),
                 env::var("WHATSAPP_GRAPH_API_URL")
                     .unwrap_or_else(|_| "https://graph.facebook.com".into()),
             ),

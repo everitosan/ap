@@ -6,7 +6,7 @@ use crate::shared::ApiResponse;
 
 /// Health check endpoint
 async fn health() -> HttpResponse {
-    HttpResponse::Ok().json(ApiResponse::success("ok"))
+    HttpResponse::Ok().json(ApiResponse::new("ok"))
 }
 
 /// Configura todas las rutas de la API

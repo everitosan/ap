@@ -9,7 +9,7 @@ pub async fn get_topics(state: web::Data<AppState>) -> HttpResponse {
     let repository = PostgresTopicRepository::new(state.db_pool.clone());
 
     match GetTopicsUseCase::execute(&repository).await {
-        Ok(topics) => HttpResponse::Ok().json(ApiResponse::success(topics)),
+        Ok(topics) => HttpResponse::Ok().json(ApiResponse::new(topics)),
         Err(e) => e.error_response(),
     }
 }
