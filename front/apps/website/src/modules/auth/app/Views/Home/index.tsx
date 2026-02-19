@@ -1,6 +1,10 @@
 import { useState } from "react"
 import { Link, useNavigate } from "react-router"
-import {validate} from "@/validations"
+import { validate } from "@/validations"
+import { loginOrRegister } from "@/modules/auth/infra/repository/login-register"
+import { FetchError } from "justfetch-ts"
+import type { ApiError } from "@/api/ap"
+
 // Components
 import Typo from "@repo/ui/components/typography"
 import Divider from "@repo/ui/components/divider"
@@ -16,19 +20,30 @@ const Home: React.FunctionComponent = () => {
   const [error, setError] = useState<string | undefined>();
   const [loading, setLoading] = useState<boolean>(false);
 
-
-  const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    setLoading(true);
+  const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    setLoading(true);
     setError(undefined);
 
-    validate("telephone", (e.currentTarget.elements.namedItem("telephone") as HTMLInputElement).value)
-      .then(res => {
-        console.log(res)
-        navigate("/validate")
-      })
-      .catch(e => setError(e))
-      .finally(() => setLoading(false) )
+    const telephone = (e.currentTarget.elements.namedItem("telephone") as HTMLInputElement).value;
+
+    try {
+      await validate("telephone", telephone);
+      await loginOrRegister(telephone);
+      navigate("/validate");
+    } catch (err) {
+      if (err instanceof FetchError) {
+        const apiError = err.message as unknown as ApiError;
+        alert(apiError.message || "Error al registrarse");
+      } else if (typeof err === "string") {
+        setError(err);
+      } else {
+        console.error(err)
+        alert("Error inesperado");
+      }
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
