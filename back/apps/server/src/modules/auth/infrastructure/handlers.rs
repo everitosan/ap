@@ -5,7 +5,7 @@ use chrono::{DateTime, Utc};
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 
-use crate::modules::auth::application::{request_otp, verify_otp};
+use crate::modules::auth::application::{request_otp, resend_otp, verify_otp};
 use crate::modules::auth::domain::{SessionData, UserRepository};
 use crate::modules::auth::infrastructure::{
     PostgresUserRepository, PostgresValidationCodeRepository, RandomOtpGenerator,
@@ -147,6 +147,44 @@ pub async fn get_user(
             HttpResponse::Ok().json(ApiResponse::new(response))
         }
         Ok(None) => AppError::NotFound("User not found".into()).error_response(),
+        Err(e) => e.error_response(),
+    }
+}
+
+/// POST /api/v1/resend-code
+pub async fn resend_code(
+    req: HttpRequest,
+    state: web::Data<AppState>,
+) -> HttpResponse {
+    // Get user_id from encrypted ap_tmp cookie
+    let user_id = match req.cookie(TMP_COOKIE_NAME) {
+        Some(cookie) => {
+            let decrypted = match state.cookie_encryptor.decrypt(cookie.value()) {
+                Some(value) => value,
+                None => return AppError::BadRequest("Invalid session".into()).error_response(),
+            };
+            match Uuid::parse_str(&decrypted) {
+                Ok(id) => id,
+                Err(_) => return AppError::BadRequest("Invalid session".into()).error_response(),
+            }
+        }
+        None => return AppError::BadRequest("No session found".into()).error_response(),
+    };
+
+    let user_repo = PostgresUserRepository::new(state.db_pool.clone());
+    let code_repo = PostgresValidationCodeRepository::new(state.db_pool.clone());
+    let otp_generator = RandomOtpGenerator;
+
+    match resend_otp(
+        user_id,
+        &user_repo,
+        &code_repo,
+        &otp_generator,
+        state.phone_notifier.as_ref(),
+    )
+    .await
+    {
+        Ok(()) => HttpResponse::Ok().json(ApiResponse::new("OTP resent")),
         Err(e) => e.error_response(),
     }
 }
