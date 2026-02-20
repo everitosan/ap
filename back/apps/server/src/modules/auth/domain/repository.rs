@@ -11,7 +11,7 @@ pub trait UserRepository: Send + Sync {
     async fn find_by_id(&self, id: Uuid) -> Result<Option<User>, AppError>;
     async fn create(&self, user: &User) -> Result<(), AppError>;
     async fn update_last_login(&self, id: Uuid) -> Result<(), AppError>;
-    async fn update_profile(&self, id: Uuid, username: &str, topics: &serde_json::Value) -> Result<(), AppError>;
+    async fn update_profile(&self, id: Uuid, username: &str, topic_ids: &[i32]) -> Result<(), AppError>;
     async fn update_address(&self, id: Uuid, address: &serde_json::Value) -> Result<(), AppError>;
 }
 

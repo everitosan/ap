@@ -9,7 +9,7 @@ pub struct User {
     pub phone: String,
     pub username: Option<String>,
     pub address: Option<serde_json::Value>,
-    pub topics: Option<serde_json::Value>,
+    pub topics: Vec<i32>,  // Array of topic IDs
     pub created: DateTime<Utc>,
     pub last_login: Option<DateTime<Utc>>,
 }
@@ -21,7 +21,7 @@ impl User {
             phone,
             username: None,
             address: None,
-            topics: None,
+            topics: Vec::new(),  // No topics selected initially
             created: Utc::now(),
             last_login: None,
         }

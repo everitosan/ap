@@ -5,29 +5,40 @@
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 
 -- Topics catalogue table
+-- Using SERIAL for bitmask approach: ID position maps to bit position
+-- Topic with ID=n has bitmask value of 2^(n-1) or (1 << (n-1))
+-- Example: ID=1 → 2^0=1, ID=2 → 2^1=2, ID=3 → 2^2=4, etc.
 DROP TABLE IF EXISTS topics_catalogue CASCADE;
 CREATE TABLE topics_catalogue (
-    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-    name VARCHAR(50) NOT NULL
+    id SERIAL PRIMARY KEY,
+    name VARCHAR(50) NOT NULL,
+    active BOOLEAN DEFAULT false
 );
 
 -- Seed: Topics catalogue (13 temas de interés comunes en México)
+-- IDs will be: 1-13, mapping to bitmask values: 1, 2, 4, 8, 16, 32, 64, 128, 256, 512, 1024, 2048, 4096
 INSERT INTO topics_catalogue (name) VALUES
-    ('Fútbol'),
-    ('Música'),
-    ('Gastronomía'),
-    ('Familia'),
-    ('Tecnología'),
-    ('Cine y TV'),
-    ('Viajes'),
-    ('Salud y Bienestar'),
-    ('Moda'),
-    ('Negocios'),
-    ('Política'),
-    ('Espiritualidad'),
-    ('Educación');
+    ('Fútbol'),          -- ID=1,  bitmask=1
+    ('Música'),          -- ID=2,  bitmask=2
+    ('Gastronomía'),     -- ID=3,  bitmask=4
+    ('Familia'),         -- ID=4,  bitmask=8
+    ('Tecnología'),      -- ID=5,  bitmask=16
+    ('Cine y TV'),       -- ID=6,  bitmask=32
+    ('Viajes'),          -- ID=7,  bitmask=64
+    ('Salud y Bienestar'), -- ID=8,  bitmask=128
+    ('Moda'),            -- ID=9,  bitmask=256
+    ('Negocios'),        -- ID=10, bitmask=512
+    ('Política'),        -- ID=11, bitmask=1024
+    ('Espiritualidad'),  -- ID=12, bitmask=2048
+    ('Educación');       -- ID=13, bitmask=4096
 
 -- Users table
+-- topics field uses bitmask approach: each bit represents a topic from topics_catalogue
+-- Example: topics=22 (binary: 10110) means user has topics with IDs 2, 3, and 5
+-- To add topic: topics = topics | (1 << (topic_id - 1))
+-- To check topic: (topics & (1 << (topic_id - 1))) > 0
+-- To find common topics: user1.topics & user2.topics
+-- To count common topics: BIT_COUNT(user1.topics & user2.topics)
 DROP TABLE IF EXISTS users CASCADE;
 CREATE TABLE users (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
@@ -35,7 +46,8 @@ CREATE TABLE users (
     address JSONB,
     username VARCHAR(40) NULL,
     created TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-    topics JSONB NULL,
+    topics INTEGER DEFAULT 0,
+    blocked_users JSONB DEFAULT '[]'::jsonb,
     last_login TIMESTAMPTZ NULL
 );
 

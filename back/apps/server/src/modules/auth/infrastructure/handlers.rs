@@ -1,8 +1,7 @@
 use actix_web::cookie::time::Duration;
 use actix_web::cookie::{Cookie, SameSite};
 use actix_web::{web, HttpRequest, HttpResponse, ResponseError};
-use chrono::{DateTime, Utc};
-use serde::{Deserialize, Serialize};
+use serde::Deserialize;
 use uuid::Uuid;
 
 use crate::modules::auth::application::{request_otp, resend_otp, verify_otp};
@@ -10,7 +9,7 @@ use crate::modules::auth::domain::{SessionData, UserRepository};
 use crate::modules::auth::infrastructure::{
     PostgresUserRepository, PostgresValidationCodeRepository, RandomOtpGenerator,
 };
-use crate::shared::{ApiResponse, AppState, AppError, AuthSession};
+use crate::shared::{ApiResponse, AppState, AppError};
 
 const TMP_COOKIE_NAME: &str = "ap_tmp";
 const SESSION_COOKIE_NAME: &str = "ap";
@@ -121,36 +120,6 @@ pub async fn validate_code(
         .json(ApiResponse::new("Verified"))
 }
 
-#[derive(Serialize)]
-pub struct UserResponse {
-    pub username: Option<String>,
-    pub topics: Option<serde_json::Value>,
-    pub created: DateTime<Utc>,
-    pub filled_address: bool,
-}
-
-/// GET /api/v1/user
-pub async fn get_user(
-    session: AuthSession,
-    state: web::Data<AppState>,
-) -> HttpResponse {
-    let user_repo = PostgresUserRepository::new(state.db_pool.clone());
-
-    match user_repo.find_by_id(session.user_id).await {
-        Ok(Some(user)) => {
-            let response = UserResponse {
-                username: user.username,
-                topics: user.topics,
-                created: user.created,
-                filled_address: user.address.is_some(),
-            };
-            HttpResponse::Ok().json(ApiResponse::new(response))
-        }
-        Ok(None) => AppError::NotFound("User not found".into()).error_response(),
-        Err(e) => e.error_response(),
-    }
-}
-
 /// POST /api/v1/resend-code
 pub async fn resend_code(
     req: HttpRequest,
@@ -185,59 +154,6 @@ pub async fn resend_code(
     .await
     {
         Ok(()) => HttpResponse::Ok().json(ApiResponse::new("OTP resent")),
-        Err(e) => e.error_response(),
-    }
-}
-
-#[derive(Deserialize)]
-pub struct FillProfileRequest {
-    username: String,
-    topics: serde_json::Value,
-}
-
-/// POST /api/v1/fill-profile
-pub async fn fill_profile(
-    session: AuthSession,
-    state: web::Data<AppState>,
-    body: web::Json<FillProfileRequest>,
-) -> HttpResponse {
-    let user_repo = PostgresUserRepository::new(state.db_pool.clone());
-
-    match user_repo.update_profile(session.user_id, &body.username, &body.topics).await {
-        Ok(()) => HttpResponse::Ok().json(ApiResponse::new("Profile updated")),
-        Err(e) => e.error_response(),
-    }
-}
-
-#[derive(Deserialize)]
-pub struct FillAddressRequest {
-    street: String,
-    int_number: String,
-    postal_code: String,
-    state: String,
-    city: String,
-    colony: String,
-}
-
-/// POST /api/v1/fill-address
-pub async fn fill_address(
-    session: AuthSession,
-    state: web::Data<AppState>,
-    body: web::Json<FillAddressRequest>,
-) -> HttpResponse {
-    let user_repo = PostgresUserRepository::new(state.db_pool.clone());
-
-    let address = serde_json::json!({
-        "street": body.street,
-        "int_number": body.int_number,
-        "postal_code": body.postal_code,
-        "state": body.state,
-        "city": body.city,
-        "colony": body.colony,
-    });
-
-    match user_repo.update_address(session.user_id, &address).await {
-        Ok(()) => HttpResponse::Ok().json(ApiResponse::new("Address updated")),
         Err(e) => e.error_response(),
     }
 }

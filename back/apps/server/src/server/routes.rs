@@ -1,7 +1,8 @@
 use actix_web::{web, HttpResponse};
 
-use crate::modules::auth::infrastructure::{fill_address, fill_profile, get_user, register_or_login, resend_code, validate_code};
+use crate::modules::auth::infrastructure::{register_or_login, resend_code, validate_code};
 use crate::modules::topics::infrastructure::get_topics;
+use crate::modules::users::infrastructure::{fill_address, fill_profile, get_user};
 use crate::shared::ApiResponse;
 
 /// Health check endpoint
