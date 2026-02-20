@@ -35,9 +35,20 @@ struct UserRow {
     phone: String,
     username: Option<String>,
     address: Option<serde_json::Value>,
-    topics: i32,  // Bitmask stored as INTEGER
+    topics: i32,
+    blocked_users: serde_json::Value,
     created: chrono::DateTime<chrono::Utc>,
     last_login: Option<chrono::DateTime<chrono::Utc>>,
+}
+
+fn parse_blocked_users(json: &serde_json::Value) -> Vec<Uuid> {
+    json.as_array()
+        .map(|arr| {
+            arr.iter()
+                .filter_map(|v| v.as_str().and_then(|s| Uuid::parse_str(s).ok()))
+                .collect()
+        })
+        .unwrap_or_default()
 }
 
 impl From<UserRow> for User {
@@ -47,7 +58,8 @@ impl From<UserRow> for User {
             phone: row.phone,
             username: row.username,
             address: row.address,
-            topics: bitmask_to_topics(row.topics),  // Convert bitmask to Vec<i32>
+            topics: bitmask_to_topics(row.topics),
+            blocked_users: parse_blocked_users(&row.blocked_users),
             created: row.created,
             last_login: row.last_login,
         }
@@ -87,7 +99,7 @@ impl PostgresUserRepository {
 impl UserRepository for PostgresUserRepository {
     async fn find_by_phone(&self, phone: &str) -> Result<Option<User>, AppError> {
         let row: Option<UserRow> = sqlx::query_as(
-            "SELECT id, phone, username, address, topics, created, last_login FROM users WHERE phone = $1"
+            "SELECT id, phone, username, address, topics, blocked_users, created, last_login FROM users WHERE phone = $1"
         )
         .bind(phone)
         .fetch_optional(&self.pool)
@@ -98,7 +110,7 @@ impl UserRepository for PostgresUserRepository {
 
     async fn find_by_id(&self, id: Uuid) -> Result<Option<User>, AppError> {
         let row: Option<UserRow> = sqlx::query_as(
-            "SELECT id, phone, username, address, topics, created, last_login FROM users WHERE id = $1"
+            "SELECT id, phone, username, address, topics, blocked_users, created, last_login FROM users WHERE id = $1"
         )
         .bind(id)
         .fetch_optional(&self.pool)
@@ -108,15 +120,20 @@ impl UserRepository for PostgresUserRepository {
     }
 
     async fn create(&self, user: &User) -> Result<(), AppError> {
-        let topics_bitmask = topics_to_bitmask(&user.topics);  // Convert Vec<i32> to bitmask
+        let topics_bitmask = topics_to_bitmask(&user.topics);
+        let blocked_users_json: serde_json::Value = user.blocked_users
+            .iter()
+            .map(|id| serde_json::Value::String(id.to_string()))
+            .collect();
         sqlx::query(
-            "INSERT INTO users (id, phone, username, address, topics, created, last_login) VALUES ($1, $2, $3, $4, $5, $6, $7)"
+            "INSERT INTO users (id, phone, username, address, topics, blocked_users, created, last_login) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)"
         )
         .bind(user.id)
         .bind(&user.phone)
         .bind(&user.username)
         .bind(&user.address)
         .bind(topics_bitmask)
+        .bind(&blocked_users_json)
         .bind(user.created)
         .bind(user.last_login)
         .execute(&self.pool)

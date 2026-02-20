@@ -1,6 +1,7 @@
 use actix_web::{web, HttpResponse};
 
 use crate::modules::auth::infrastructure::{register_or_login, resend_code, validate_code};
+use crate::modules::matching::infrastructure::{cancel_match, get_match_status, request_match};
 use crate::modules::topics::infrastructure::get_topics;
 use crate::modules::users::infrastructure::{fill_address, fill_profile, get_user};
 use crate::shared::ApiResponse;
@@ -22,6 +23,9 @@ pub fn configure_routes(cfg: &mut web::ServiceConfig) {
             .route("/resend-code", web::post().to(resend_code))
             .route("/user", web::get().to(get_user))
             .route("/fill-profile", web::post().to(fill_profile))
-            .route("/fill-address", web::post().to(fill_address)),
+            .route("/fill-address", web::post().to(fill_address))
+            .route("/match/request", web::post().to(request_match))
+            .route("/match", web::delete().to(cancel_match))
+            .route("/match/status", web::get().to(get_match_status)),
     );
 }

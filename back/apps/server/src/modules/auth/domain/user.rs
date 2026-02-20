@@ -9,7 +9,8 @@ pub struct User {
     pub phone: String,
     pub username: Option<String>,
     pub address: Option<serde_json::Value>,
-    pub topics: Vec<i32>,  // Array of topic IDs
+    pub topics: Vec<i32>,
+    pub blocked_users: Vec<Uuid>,
     pub created: DateTime<Utc>,
     pub last_login: Option<DateTime<Utc>>,
 }
@@ -21,7 +22,8 @@ impl User {
             phone,
             username: None,
             address: None,
-            topics: Vec::new(),  // No topics selected initially
+            topics: Vec::new(),
+            blocked_users: Vec::new(),
             created: Utc::now(),
             last_login: None,
         }

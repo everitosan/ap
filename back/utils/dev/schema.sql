@@ -12,7 +12,7 @@ DROP TABLE IF EXISTS topics_catalogue CASCADE;
 CREATE TABLE topics_catalogue (
     id SERIAL PRIMARY KEY,
     name VARCHAR(50) NOT NULL,
-    active BOOLEAN DEFAULT false
+    active BOOLEAN DEFAULT true
 );
 
 -- Seed: Topics catalogue (13 temas de interés comunes en México)
@@ -64,4 +64,29 @@ CREATE TABLE validation_codes (
 CREATE INDEX idx_validation_codes_code ON validation_codes(code);
 CREATE INDEX idx_validation_codes_expires_at ON validation_codes(expires_at);
 
+-- Matching queue table
+-- Users who have requested a match but haven't been paired yet
+DROP TABLE IF EXISTS matching_queue CASCADE;
+CREATE TABLE matching_queue (
+    user_id UUID PRIMARY KEY REFERENCES users(id) ON DELETE CASCADE,
+    queued_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
 
+CREATE INDEX idx_matching_queue_queued_at ON matching_queue(queued_at);
+
+-- Active pairings table (1:1 matches)
+-- Constraint: user_a_id < user_b_id prevents duplicate pairs
+DROP TABLE IF EXISTS pairings CASCADE;
+CREATE TABLE pairings (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    user_a_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    user_b_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    affinity_score INTEGER NOT NULL,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    UNIQUE(user_a_id),
+    UNIQUE(user_b_id),
+    CHECK (user_a_id < user_b_id)
+);
+
+CREATE INDEX idx_pairings_user_a ON pairings(user_a_id);
+CREATE INDEX idx_pairings_user_b ON pairings(user_b_id);
