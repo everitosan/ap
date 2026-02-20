@@ -19,6 +19,7 @@ const Home: React.FunctionComponent = () => {
   const navigate = useNavigate();
   const [error, setError] = useState<string | undefined>();
   const [loading, setLoading] = useState<boolean>(false);
+  const [acceptedTerms, setAcceptedTerms] = useState<boolean>(false);
 
   const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -81,7 +82,19 @@ const Home: React.FunctionComponent = () => {
             placeholder="Teléfono de Whatsapp"
             error={error}
           />
-          <Button loading={loading} type="submit">
+          <label className="HomeView__terms">
+            <input
+              type="checkbox"
+              checked={acceptedTerms}
+              onChange={(e) => setAcceptedTerms(e.target.checked)}
+            />
+            <span>
+              Acepto los{" "}
+              <Link to="/terminos-y-condiciones">Términos y Condiciones</Link> y
+              el <Link to="/aviso-de-privacidad">Aviso de Privacidad</Link>
+            </span>
+          </label>
+          <Button loading={loading} type="submit" disabled={!acceptedTerms}>
             ¡Empezar!
           </Button>
           <Link to="/login">

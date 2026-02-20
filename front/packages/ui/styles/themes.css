@@ -11,6 +11,7 @@
   --black-100: #000000;
   --black-80: #1B1B1B;
   --red-50: #D01A1A;
+  --blue-50: #0f629e;
   
   /* spacing */
   --spacing-base: 4px;
@@ -53,4 +54,9 @@ html, body {
   height: 100vh;
   margin: 0;
   padding: 0;
+}
+
+a {
+  color: var(--blue-50);
+  text-decoration: underline;
 }

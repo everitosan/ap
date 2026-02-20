@@ -72,7 +72,10 @@ const FillAddressView: React.FunctionComponent = () => {
     <section className="FillAddressView">
       <Typo type="title" align="center">Dirección</Typo>
       <Divider />
-      <Typo> Necesitamos tu dirección para que tu nuevo amigo pueda comunicarse contigo vía correo postal. </Typo>
+      <Typo> Ya casí!  </Typo>
+      <Typo>
+        Solo necesitamos tu dirección para que tu nuevo amigo pueda comunicarse contigo vía correo postal. 
+      </Typo>
       <Typo type="section"> Dirección </Typo>
 
       <form className="FillAddressView__form" onSubmit={onSubmit} autoComplete="off">

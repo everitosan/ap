@@ -1,0 +1,32 @@
+.PrivacyNotice {
+  display: grid;
+  grid-row-gap: var(--spacing-6x);
+}
+
+.PrivacyNotice__header {
+  display: grid;
+  grid-row-gap: var(--spacing-4x);
+}
+
+.PrivacyNotice__content {
+  display: grid;
+  grid-row-gap: var(--spacing-6x);
+}
+
+.PrivacyNotice__section {
+  display: grid;
+  grid-row-gap: var(--spacing-3x);
+}
+
+.PrivacyNotice__list {
+  margin: 0;
+  padding-left: var(--spacing-6x);
+  display: grid;
+  grid-row-gap: var(--spacing-2x);
+}
+
+.PrivacyNotice__footer {
+  display: flex;
+  justify-content: center;
+  margin-top: var(--spacing-4x);
+}

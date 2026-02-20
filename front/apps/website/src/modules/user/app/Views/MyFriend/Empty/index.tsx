@@ -19,7 +19,7 @@ const MyFriendEmptyView: React.FunctionComponent = () => {
   return (
     <div className="MyFriendViewEmpty">
         <Typo align="center">
-          Al parecer aún no tienes un amigo adignado, no te preocupes puedes solicitar uno haciendo click abajo.
+          Al parecer aún no tienes un amigo asignado, no te preocupes puedes solicitar uno haciendo click abajo.
         </Typo>
       <Button onClick={handleRequest}>Solicitar</Button>
     </div>

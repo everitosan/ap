@@ -6,7 +6,7 @@
 @media screen and (min-width: 768px) { 
   .content {
     display: grid;
-    height: 80vh;
+    min-height: 80vh;
     place-items: center;
   }
 }
