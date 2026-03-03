@@ -8,7 +8,7 @@ use crate::shared::AppError;
 pub enum MatchResult {
     Matched { partner_id: Uuid, affinity_score: i32 },
     Queued { queued_at: DateTime<Utc> },
-    AlreadyPaired { partner_id: Uuid },
+    AlreadyPaired,
     AlreadyInQueue { queued_at: DateTime<Utc> },
 }
 
@@ -23,10 +23,8 @@ pub async fn request_match<MR: MatchingRepository, UR: UserRepository>(
     matching_repo: &MR,
     user_repo: &UR,
 ) -> Result<MatchResult, AppError> {
-    if let Some(existing_pairing) = matching_repo.find_pairing_for_user(user_id).await? {
-        let partner_id = existing_pairing.get_partner_id(user_id)
-            .ok_or_else(|| AppError::Internal("Invalid pairing state".into()))?;
-        return Ok(MatchResult::AlreadyPaired { partner_id });
+    if let Some(_existing_pairing) = matching_repo.find_pairing_for_user(user_id).await? {
+        return Ok(MatchResult::AlreadyPaired);
     }
 
     if let Some(queue_entry) = matching_repo.find_in_queue(user_id).await? {

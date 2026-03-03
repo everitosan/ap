@@ -26,6 +26,17 @@ export type AddressData = {
   colony: string
 }
 
+export type PartnerData = {
+  username: string | null
+  address: AddressData | null
+}
+
+export type MatchStatusResponse = {
+  status: "paired" | "queued" | "already_paired" | "already_queued" | "idle"
+  partner: PartnerData | null
+  queued_at: string | null
+}
+
 class ApApi extends Fetch {
   login(telephone: string): Promise<ApiResponse<string>> {
     return this.post("/api/v1/login", { payload: { telephone } })
@@ -57,6 +68,18 @@ class ApApi extends Fetch {
 
   fillAddress(address: AddressData): Promise<ApiResponse<string>> {
     return this.post("/api/v1/fill-address", { payload: address })
+  }
+
+  requestMatch(): Promise<ApiResponse<MatchStatusResponse>> {
+    return this.post("/api/v1/match/request", {})
+  }
+
+  getMatchStatus(): Promise<ApiResponse<MatchStatusResponse>> {
+    return this.get("/api/v1/match/status")
+  }
+
+  cancelMatch(): Promise<ApiResponse<string>> {
+    return this.delete("/api/v1/match")
   }
 }
 

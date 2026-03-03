@@ -1,6 +1,5 @@
 use actix_web::{web, HttpResponse, ResponseError};
 use serde::Serialize;
-use uuid::Uuid;
 
 use crate::modules::matching::application;
 use crate::modules::matching::infrastructure::PostgresMatchingRepository;
@@ -8,9 +7,15 @@ use crate::modules::users::infrastructure::PostgresUserRepository;
 use crate::shared::{ApiResponse, AppState, AuthSession};
 
 #[derive(Serialize)]
+pub struct PartnerResponse {
+    pub username: Option<String>,
+    pub address: Option<serde_json::Value>,
+}
+
+#[derive(Serialize)]
 pub struct MatchStatusResponse {
     pub status: String,
-    pub partner_id: Option<Uuid>,
+    pub partner: Option<PartnerResponse>,
     pub queued_at: Option<chrono::DateTime<chrono::Utc>>,
 }
 
@@ -24,31 +29,31 @@ pub async fn request_match(
     match application::request_match(session.user_id, &matching_repo, &user_repo).await {
         Ok(result) => {
             let response = match result {
-                application::MatchResult::Matched { partner_id, .. } => {
+                application::MatchResult::Matched { .. } => {
                     MatchStatusResponse {
                         status: "paired".into(),
-                        partner_id: Some(partner_id),
+                        partner: None,
                         queued_at: None,
                     }
                 }
                 application::MatchResult::Queued { queued_at } => {
                     MatchStatusResponse {
                         status: "queued".into(),
-                        partner_id: None,
+                        partner: None,
                         queued_at: Some(queued_at),
                     }
                 }
-                application::MatchResult::AlreadyPaired { partner_id } => {
+                application::MatchResult::AlreadyPaired  => {
                     MatchStatusResponse {
                         status: "already_paired".into(),
-                        partner_id: Some(partner_id),
+                        partner: None,
                         queued_at: None,
                     }
                 }
                 application::MatchResult::AlreadyInQueue { queued_at } => {
                     MatchStatusResponse {
                         status: "already_queued".into(),
-                        partner_id: None,
+                        partner: None,
                         queued_at: Some(queued_at),
                     }
                 }
@@ -83,28 +88,32 @@ pub async fn get_match_status(
     state: web::Data<AppState>,
 ) -> HttpResponse {
     let matching_repo = PostgresMatchingRepository::new(state.db_pool.clone());
+    let user_repo = PostgresUserRepository::new(state.db_pool.clone());
 
-    match application::get_match_status(session.user_id, &matching_repo).await {
+    match application::get_match_status(session.user_id, &matching_repo, &user_repo).await {
         Ok(status) => {
             let response = match status {
-                application::MatchStatus::Paired { partner_id } => {
+                application::MatchStatus::Paired { partner } => {
                     MatchStatusResponse {
                         status: "paired".into(),
-                        partner_id: Some(partner_id),
+                        partner: Some(PartnerResponse {
+                            username: partner.username,
+                            address: partner.address,
+                        }),
                         queued_at: None,
                     }
                 }
                 application::MatchStatus::Queued { queued_at } => {
                     MatchStatusResponse {
                         status: "queued".into(),
-                        partner_id: None,
+                        partner: None,
                         queued_at: Some(queued_at),
                     }
                 }
                 application::MatchStatus::Idle => {
                     MatchStatusResponse {
                         status: "idle".into(),
-                        partner_id: None,
+                        partner: None,
                         queued_at: None,
                     }
                 }

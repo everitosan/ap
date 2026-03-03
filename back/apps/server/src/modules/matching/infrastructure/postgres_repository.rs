@@ -99,7 +99,7 @@ impl MatchingRepository for PostgresMatchingRepository {
                 JOIN users u ON u.id = mq.user_id
                 WHERE u.blocked_users @> to_jsonb($1::text)
             )
-            SELECT mq.user_id, BIT_COUNT(u.topics & $2) as affinity_score
+            SELECT mq.user_id, BIT_COUNT((u.topics & $2)::bit(32)) as affinity_score
             FROM matching_queue mq
             JOIN users u ON u.id = mq.user_id
             WHERE mq.user_id != $1

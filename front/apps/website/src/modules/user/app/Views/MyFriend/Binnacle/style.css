@@ -1,30 +1,50 @@
 .MyFriendViewBinnacle {
   display: flex;
   flex-direction: column;
-  align-items: center;
   gap: var(--spacing-8x);
+  height: 70vh;
+  justify-content: space-between;
+  place-items: center;
 }
 
 .MyFriendViewBinnacle__info {
-  border: 1px solid var(--color-border);
-  border-radius: var(--border-radius);
-  padding: var(--spacing-4x);
-  width: 100%;
+  border: 1px dashed var(--gray-60);
+  border-radius: 10px;
+  box-sizing: border-box;
   display: flex;
   flex-direction: column;
   gap: var(--spacing-2x);
+  padding: var(--spacing-4x);
+  width: 100%;
+}
+
+.MyFriendViewBinnacle__buttons {
+  display: grid;
+  gap: var(--spacing-4x);
 }
 
 .MyFriendViewBinnacle__finish {
   background: none;
   border: none;
   color: var(--color-text);
-  text-decoration: underline;
   cursor: pointer;
   font-family: inherit;
   font-size: inherit;
+  text-decoration: underline;
 }
 
 .MyFriendViewBinnacle__finish:hover {
   opacity: 0.8;
+}
+
+@media (prefers-color-scheme: dark) {
+  .MyFriendViewBinnacle__info {
+    border-color: var(--gray-100);
+  }
+}
+
+@media screen and (min-width: 768px) {
+  .MyFriendViewBinnacle {
+    height: auto;
+  }
 }
